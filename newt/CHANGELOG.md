@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.10.3-1] - 2026-03-17
 
 ### Changed
-- Newt version bumped to 1.10.2 (https://github.com/fosrl/newt/releases/tag/1.10.3)
+- Newt version bumped to 1.10.3 (https://github.com/fosrl/newt/releases/tag/1.10.3)
 
 ## [1.10.2-1] - 2026-03-08
 
