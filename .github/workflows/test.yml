@@ -1,4 +1,4 @@
-name: "Test"
+name: Test
 
 on:
   pull_request:
@@ -7,18 +7,53 @@ on:
       - reopened
       - synchronize
 
+env:
+  ARCHITECTURES: '["amd64", "aarch64"]'
+  IMAGE_NAME: newt
+
+permissions:
+  contents: read
+
 jobs:
-  test:
-    name: Test
+  init:
+    name: Initialize build
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v6
-      - name: Test
-        uses: home-assistant/builder@master
+      - uses: actions/checkout@v6
+
+      - name: Get build matrix
+        id: matrix
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.03.2
         with:
-          args: |
-            --amd64 \
-            --aarch64 \
-            --target newt \
-            --test
+          architectures: ${{ env.ARCHITECTURES }}
+          image-name: ${{ env.IMAGE_NAME }}
+
+  build:
+    name: Test build ${{ matrix.arch }} image
+    needs: init
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.init.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build image (no push)
+        uses: home-assistant/builder/actions/build-image@2026.03.2
+        with:
+          arch: ${{ matrix.arch }}
+          context: newt
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          cosign: "false"
+          image: ${{ matrix.image }}
+          image-tags: |
+            test
+          load: "true"
+          push: "false"
+          version: ${{ github.event.pull_request.head.sha }}
+          build-args: |
+            BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:latest

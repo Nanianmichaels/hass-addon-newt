@@ -1,27 +1,75 @@
-name: "Publish"
+name: Publish
 
 on:
   release:
     types: [published]
 
+env:
+  ARCHITECTURES: '["amd64", "aarch64"]'
+  IMAGE_NAME: newt
+
+permissions:
+  contents: read
+
 jobs:
-  publish:
-    name: Publish
+  init:
+    name: Initialize build
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v6
-      - name: Login to DockerHub
-        uses: docker/login-action@v4
+      - uses: actions/checkout@v6
+
+      - name: Get build matrix
+        id: matrix
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.03.2
         with:
-          registry: ghcr.io
-          username: phil-lipp
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish
-        uses: home-assistant/builder@master
+          architectures: ${{ env.ARCHITECTURES }}
+          image-name: ${{ env.IMAGE_NAME }}
+
+  build:
+    name: Build ${{ matrix.arch }} image
+    needs: init
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.init.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build image
+        uses: home-assistant/builder/actions/build-image@2026.03.2
         with:
-          args: |
-            --amd64 \
-            --aarch64 \
-            --target newt \
-            --docker-hub ghcr.io/phil-lipp
+          arch: ${{ matrix.arch }}
+          context: newt
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image: ${{ matrix.image }}
+          image-tags: |
+            ${{ github.event.release.tag_name }}
+            latest
+          push: "true"
+          version: ${{ github.event.release.tag_name }}
+          build-args: |
+            BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:latest
+
+  manifest:
+    name: Publish multi-arch manifest
+    needs: [init, build]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: write
+    steps:
+      - name: Publish multi-arch manifest
+        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.03.2
+        with:
+          architectures: ${{ env.ARCHITECTURES }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ${{ env.IMAGE_NAME }}
+          image-tags: |
+            ${{ github.event.release.tag_name }}
+            latest
