@@ -86,9 +86,13 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
         run: |
           set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::Set repository secret GH_RELEASE_TOKEN (classic PAT with repo scope, or fine-grained with Contents: Read and write). Required so the published release triggers publish.yml."
+            exit 1
+          fi
           TAG="v${{ steps.version.outputs.version }}"
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "::error::Release $TAG already exists"
