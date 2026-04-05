@@ -53,7 +53,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          TAG="v${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.version }}"
           gh api \
             --method POST \
             -H "Accept: application/vnd.github+json" \
@@ -79,7 +79,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No CHANGELOG changes to commit"
           else
-            git commit -m "chore(newt): sync changelog for v${{ steps.version.outputs.version }}"
+            git commit -m "chore(newt): sync changelog for ${{ steps.version.outputs.version }}"
             git push origin "${{ github.ref_name }}"
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -93,7 +93,7 @@ jobs:
             echo "::error::Set repository secret GH_RELEASE_TOKEN (classic PAT with repo scope, or fine-grained with Contents: Read and write). Required so the published release triggers publish.yml."
             exit 1
           fi
-          TAG="v${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.version }}"
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "::error::Release $TAG already exists"
             exit 1
