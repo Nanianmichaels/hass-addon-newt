@@ -17,7 +17,6 @@ permissions:
 jobs:
   bump:
     runs-on: ubuntu-latest
-    # Avoid scheduled noise and permission issues on forks; manual runs still work there
     if: github.event.repository.fork == false || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v6
