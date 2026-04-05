@@ -14,8 +14,6 @@ RUN \
       curl -o /newt -L -s "https://github.com/fosrl/newt/releases/download/${NEWT_VERSION#v}/newt_linux_arm64"; \
     elif [ "$BUILD_ARCH" = "amd64" ]; then \
       curl -o /newt -L -s "https://github.com/fosrl/newt/releases/download/${NEWT_VERSION#v}/newt_linux_amd64"; \
-    elif [ "$BUILD_ARCH" = "armv7" ]; then \
-      curl -o /newt -L -s "https://github.com/fosrl/newt/releases/download/${NEWT_VERSION#v}/newt_linux_arm32"; \
     fi \
     && chmod a+x /newt
 
