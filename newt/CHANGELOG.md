@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Newt version bumped to 1.9.0. Adds support for olm low power mode in sub packages and iOS/Android clients with rebind support.
-- Adapt versioning to follow Newt's versioning scheme (add-on version now tracks Newt version)
+- Adapt versioning to follow Newt's versioning scheme (app version now tracks Newt version)
 - Fully fork
 
 ## [0.7.0] - 2025-12-13

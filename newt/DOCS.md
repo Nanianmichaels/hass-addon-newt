@@ -10,18 +10,18 @@ You need a configured Pangolin server which is externally accessible. [Follow th
 Create a new "Site" with `Newt` as the Method. Save the `id`, `secret`, and `endpoint` as we'll need these in a minute.
 
 ## Installation
-1. Add this repository to Home Assistant and install the addon.  
-   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fphil-lipp%2Fhass-addon-newt)
-2. Configure the addon in the "Configuration" tab using the configuration documentation below. Hit "Start" and check the "Logs" tab to check the status. On your Pangolin dashboard, you will see the newly created Site status change to "Online".
+1. Add this repository to Home Assistant and install the app ([Apps](https://www.home-assistant.io/apps/) in the UI).  
+   [![Open your Home Assistant instance and show the add app repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fphil-lipp%2Fhass-addon-newt)
+2. Configure the app in the "Configuration" tab using the configuration documentation below. Hit "Start" and check the "Logs" tab to check the status. On your Pangolin dashboard, you will see the newly created Site status change to "Online".
 3. Visit your Pangolin dashboard and add a new Resource called `Home Assistant`. Choose the correct site that relates to the Home Assistant Newt instance, that you defined in the prerequisites and give your Resource a subdomain.
 4. Make sure the "Enable SSL" option is toggled on, so that you get an automatically generated SSL certificate to encrypt the browser connections.
 5. In the "Target configuation" panel, add a target with the `HTTP` method, domain `homeassistant.local.hass.io`, and port `8123`. Hit "Add target" and save.
 6. Visit the [Home Assistant docs](https://www.home-assistant.io/integrations/http) and follow the instructions to add a `trusted_proxy` to your `configuration.yaml` file. It will probably be `172.30.33.0/24`. Make sure you also set `use_x_forwarded_for: true` so that the client's IP appears in your logs, rather than the IP of the reverse proxy. Restart Home Assistant.
-7. Your Home Assistant instance should now be available from the Resources subdomain you configured. You can now change the authentication methods or even create a new Resource to point at other addons on Home Assistant.
-8. (Optional) If you wish to have a Resource that points to a Home Assistant addon, in the "domain" part or the "Target configuration" panel, use the slug of the addon. You can find this by going to the addon configuration page in Home Assistant. In this example, the slug is "a0d7b954_tailscale". If there is an `_`, such as this example, it must be replaced with a `-`. So, the correct domain for this example would be `a0d7b954-tailscale`. Your port depends on the addon, you'll need to refer to the addon documentation or configuration.
+7. Your Home Assistant instance should now be available from the Resources subdomain you configured. You can now change the authentication methods or even create a new Resource to point at other apps on Home Assistant.
+8. (Optional) If you wish to have a Resource that points to a Home Assistant app, in the "domain" part or the "Target configuration" panel, use the slug of the app. You can find this by going to the app configuration page in Home Assistant. In this example, the slug is "a0d7b954_tailscale". If there is an `_`, such as this example, it must be replaced with a `-`. So, the correct domain for this example would be `a0d7b954-tailscale`. Your port depends on the app; refer to the app documentation or configuration.
 
 ## Configuration
-In the prerequisites section, you will have created a new Site on the Pangolin server. This will give you an endpoint, an ID, and a secret. We will put these in to the Newt addon configuration panel.
+In the prerequisites section, you will have created a new Site on the Pangolin server. This will give you an endpoint, an ID, and a secret. We will put these in to the Newt app configuration panel.
 
 ### - Option: `id`
 The `id` given by the Pangolin server. It is the unique string after `--id` in the creation wizard. Paste it here without any additional symbols or quotation marks.
@@ -38,7 +38,7 @@ If your pangolin server does not have a publicly registered dns entry, enter you
 
 ### - Option `tls-client-cert`
 
-If you use mutual TLS authentication with your pangolin server, enter the path to the certificate here. You can use the [File Editor add-on](https://www.home-assistant.io/common-tasks/os/#installing-and-using-the-file-editor-add-on) to upload your certificate.
+If you use mutual TLS authentication with your pangolin server, enter the path to the certificate here. You can use the [File Editor app](https://www.home-assistant.io/common-tasks/os/#installing-and-using-the-file-editor-app) to upload your certificate.
 See the [newt docs on mTLS](https://github.com/fosrl/newt#mtls) for more info.
 
 ### - Option `log-level`
@@ -47,4 +47,4 @@ The log level to use. In case you want less logging, or need more logging in ord
 
 ### - Option `docker`
 
-Allow Newt to access the Docker socket. **You must disable "Protection mode" from the main addon page.**
+Allow Newt to access the Docker socket. **You must disable "Protection mode" from the main app page.**

@@ -2,7 +2,7 @@ name: "Newt - Pangolin Tunnels"
 description: "Secure remote access with Pangolin tunnels."
 maintainer: phil-lipp
 url: https://docs.fossorial.io
-version: "1.11.0-1"
+version: "1.11.0-2"
 slug: "newt"
 image: "ghcr.io/phil-lipp/{arch}-newt"
 boot: auto
@@ -13,7 +13,6 @@ arch:
   - armv7
 startup: services
 hassio_api: true
-docker_api: true
 options:
   id: null
   secret: null
@@ -21,7 +20,6 @@ options:
   dns: ""
   log_level: "INFO"
   tls_client_cert: ""
-  docker: false
 schema:
   id: str
   secret: str
@@ -29,4 +27,3 @@ schema:
   dns: str?
   log_level: list(DEBUG|INFO|NOTICE|WARN|ERROR)?
   tls_client_cert: str?
-  docker: bool?

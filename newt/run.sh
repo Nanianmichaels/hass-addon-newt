@@ -21,8 +21,4 @@ if bashio::config.has_value 'tls_client_cert' && [ -n "$(bashio::config 'tls_cli
     ARGS+=("--tls-client-cert" "$(bashio::config 'tls_client_cert')")
 fi
 
-if bashio::config.has_value 'docker' && [ "$(bashio::config 'docker')" = "true" ]; then
-    ARGS+=("--docker-socket" "/var/run/docker.sock")
-fi
-
 exec /newt "${ARGS[@]}"
