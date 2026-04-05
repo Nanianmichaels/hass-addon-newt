@@ -1,0 +1,58 @@
+name: Bump Newt
+
+on:
+  schedule:
+    # Weekly Monday 07:00 UTC
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: bump-newt
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    # Avoid scheduled noise and permission issues on forks
+    if: github.event.repository.fork == false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare with latest fosrl/newt release
+        id: versions
+        run: |
+          set -euo pipefail
+          TAG=$(curl -fsSL https://api.github.com/repos/fosrl/newt/releases/latest | jq -r .tag_name)
+          LATEST="${TAG#v}"
+          CURRENT=$(sed -n 's/^ARG NEWT_VERSION="\(.*\)".*/\1/p' newt/Dockerfile)
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          if [ "$LATEST" = "$CURRENT" ]; then
+            echo "up_to_date=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "up_to_date=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Apply version bump
+        if: steps.versions.outputs.up_to_date == 'false'
+        run: |
+          LATEST="${{ steps.versions.outputs.latest }}"
+          sed -i 's/ARG NEWT_VERSION="[^"]*"/ARG NEWT_VERSION="'"$LATEST"'"/' newt/Dockerfile
+          sed -i 's/^version: "[^"]*"/version: "'"$LATEST"'-1"/' newt/config.yaml
+
+      - name: Create pull request
+        if: steps.versions.outputs.up_to_date == 'false'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Bump Newt to ${{ steps.versions.outputs.latest }}"
+          title: "Bump Newt to ${{ steps.versions.outputs.latest }}"
+          body: |
+            Automated bump to match [fosrl/newt](https://github.com/fosrl/newt) `${{ steps.versions.outputs.latest }}`.
+
+            Before merging a release, add an entry for `${{ steps.versions.outputs.latest }}-1` in `newt/CHANGELOG.md`.
+          branch: bump-newt-${{ steps.versions.outputs.latest }}
+          delete-branch: true
