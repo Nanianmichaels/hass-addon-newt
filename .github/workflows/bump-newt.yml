@@ -20,7 +20,7 @@ jobs:
     # Avoid scheduled noise and permission issues on forks
     if: github.event.repository.fork == false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Compare with latest fosrl/newt release
         id: versions
