@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.repository.fork == false || github.event_name == 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Compare with latest fosrl/newt release
         id: versions
